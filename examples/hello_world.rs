@@ -9,7 +9,7 @@ extern crate serde_derive;
 
 use futures::future::join_all;
 use serde::Serialize;
-use serde_derive::Deserialize;
+use std::iter;
 
 use gcp_pubsub::Client;
 type Exception = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -18,6 +18,7 @@ type Exception = Box<dyn std::error::Error + Send + Sync + 'static>;
 struct X {
   pub a: String,
 }
+
 #[runtime::main]
 async fn main() -> Result<(), Exception> {
   let file_path = std::env::var("GOOGLE_PUBSUB_CREDENTIALS").unwrap();
@@ -25,6 +26,7 @@ async fn main() -> Result<(), Exception> {
 
   let credentials = goauth::credentials::Credentials::from_file(&file_path).unwrap();
   let mut client = Client::new(credentials);
+
   println!("Refreshed token: {}", client.refresh_token().is_ok());
   let topic = client.topic(&topic_name);
   println!("Before sending messages");
@@ -49,6 +51,10 @@ async fn main() -> Result<(), Exception> {
     topic.publish(X::default()),
   ];
   println!("After sending messages");
+  println!("Before creating a topic");
+  let new_topic = client.create_topic("dafucka2e");
+  println!("After creating a topic");
   println!("{:?}", join_all(results).await);
+  println!("{:?}", new_topic.await);
   Ok(())
 }
