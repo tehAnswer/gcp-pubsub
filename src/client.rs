@@ -9,7 +9,7 @@ use surf::middleware::HttpClient;
 use surf::url::Url;
 use surf::Request;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Client {
   credentials: Credentials,
   access_token: Option<String>,
@@ -39,6 +39,10 @@ impl Client {
 
   pub fn topic(&self, name: &str) -> Topic {
     Topic::new(self.clone(), name)
+  }
+
+  pub async fn create_topic(&self, name: &str) -> Result<Topic, Error> {
+    Topic::create(self.clone(), name).await
   }
 
   pub fn project(&self) -> String {
