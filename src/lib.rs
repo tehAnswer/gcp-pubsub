@@ -1,4 +1,5 @@
 extern crate goauth;
+extern crate nanoid;
 extern crate smpl_jwt;
 extern crate surf;
 
@@ -7,6 +8,9 @@ pub use client::*;
 
 pub mod topic;
 pub use topic::*;
+
+pub mod subscription;
+pub use subscription::*;
 
 pub mod error;
 pub use error::*;

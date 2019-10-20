@@ -9,7 +9,6 @@ extern crate serde_derive;
 
 use futures::future::join_all;
 use serde::Serialize;
-use std::iter;
 
 use gcp_pubsub::Client;
 type Exception = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -30,31 +29,15 @@ async fn main() -> Result<(), Exception> {
   println!("Refreshed token: {}", client.refresh_token().is_ok());
   let topic = client.topic(&topic_name);
   println!("Before sending messages");
-  let results = vec![
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-    topic.publish(X::default()),
-  ];
+  let results = vec![topic.publish(X::default()), topic.publish(X::default())];
   println!("After sending messages");
-  println!("Before creating a topic");
-  let new_topic = client.create_topic("dafucka2e");
+  let topic_name = nanoid::simple();
+  let topic_result = client.create_topic(&topic_name);
   println!("After creating a topic");
   println!("{:?}", join_all(results).await);
-  println!("{:?}", new_topic.await);
+  let new_topic = topic_result.await.unwrap();
+  println!("{:?}", new_topic);
+  let new_subs = new_topic.create_subscription();
+  println!("{:?}", new_subs.await);
   Ok(())
 }
