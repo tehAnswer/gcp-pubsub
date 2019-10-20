@@ -4,11 +4,12 @@ use surf::http::Method;
 use crate::presenters::{CreateTopic, PublishMessage};
 use crate::Client;
 use crate::Error;
+use crate::Subscription;
 
 #[derive(Debug)]
 pub struct Topic {
-  client: crate::Client,
-  name: String,
+  pub name: String,
+  pub(crate) client: crate::Client,
 }
 
 impl Topic {
@@ -38,6 +39,10 @@ impl Topic {
         .map_err(|err| Error::Unexpected(format!("{}", err)))
         .and_then(|json| Err(Error::PubSub(json)))
     }
+  }
+
+  pub async fn create_subscription(&self) -> Result<Subscription, Error> {
+    Subscription::create(self.clone()).await
   }
 
   pub async fn publish<T: Serialize>(&self, data: T) -> Result<(), Error> {
