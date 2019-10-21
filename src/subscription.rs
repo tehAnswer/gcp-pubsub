@@ -1,8 +1,8 @@
 use serde::Serialize;
 use surf::http::Method;
 
-use crate::presenters::CreateSubscription;
-use crate::{Client, Error, Topic};
+use crate::presenters::{CreateSubscription, PullSubscription, ReceiveMessages};
+use crate::{Client, Error, Message, Topic};
 
 #[derive(Debug)]
 pub struct Subscription {
@@ -15,6 +15,35 @@ impl Subscription {
     Self {
       name: format!("projects/{}/subscriptions/{}", client.project(), name),
       client,
+    }
+  }
+
+  pub async fn pull(&self) -> Result<Vec<Message>, Error> {
+    let url = format!("https://pubsub.googleapis.com/v1/{}:pull", &self.name);
+    let payload = PullSubscription::new();
+    let mut response = self
+      .client
+      .base_request(Method::POST, &url)
+      .body_json(&payload)?
+      .await
+      .unwrap();
+    if response.status().is_success() {
+      let body_json = response.body_string().await;
+
+      body_json
+        .map_err(|_| Error::Unexpected("Deserializing".into()))
+        .and_then(|payload| {
+          let result: Result<ReceiveMessages, serde_json::Error> = serde_json::from_str(&payload);
+          result
+            .and_then(|messages| Ok(messages.received_messages))
+            .map_err(Error::Json)
+        })
+    } else {
+      response
+        .body_string()
+        .await
+        .map_err(|err| Error::Unexpected(format!("{}", err)))
+        .and_then(|json| Err(Error::PubSub(json)))
     }
   }
 

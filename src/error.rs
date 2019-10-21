@@ -14,6 +14,8 @@ pub enum Error {
   Unexpected(String),
   #[serde(skip_deserializing)]
   PubSub(String),
+  #[serde(skip_deserializing)]
+  IOError(std::io::Error),
 }
 
 impl fmt::Display for Error {
@@ -24,6 +26,7 @@ impl fmt::Display for Error {
       Error::Base64(e) => write!(f, "Base64({})", e),
       Error::Unexpected(message) => write!(f, "Unexpected({})", message),
       Error::PubSub(message) => write!(f, "PubSub({})", message),
+      Error::IOError(e) => write!(f, "(IOErr{})", e),
     }
   }
 }
