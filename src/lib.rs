@@ -1,3 +1,4 @@
+extern crate chrono;
 extern crate goauth;
 extern crate nanoid;
 extern crate smpl_jwt;
@@ -16,6 +17,7 @@ pub mod error;
 pub use error::*;
 
 pub mod message;
+pub use message::*;
 
 pub mod presenters;
 pub use presenters::*;

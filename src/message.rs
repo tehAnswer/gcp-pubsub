@@ -1,9 +1,9 @@
 use crate::presenters::EncodedMessage;
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
-pub(crate) struct Message {
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Message {
   #[serde(alias = "ackId")]
   pub(crate) ack_id: String,
-  pub(crate) message: EncodedMessage,
+  pub message: EncodedMessage,
 }

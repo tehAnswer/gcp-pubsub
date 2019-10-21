@@ -37,7 +37,11 @@ async fn main() -> Result<(), Exception> {
   println!("{:?}", join_all(results).await);
   let new_topic = topic_result.await.unwrap();
   println!("{:?}", new_topic);
-  let new_subs = new_topic.create_subscription();
-  println!("{:?}", new_subs.await);
+  let new_subs = new_topic.create_subscription().await.unwrap();
+  let msg = new_topic.publish(X::default()).await;
+  println!("{:?}", msg);
+  println!("{:?}", new_subs);
+  let result = new_subs.pull().await;
+  println!("{:?}", result);
   Ok(())
 }

@@ -1,4 +1,3 @@
-use crate::presenters::EncodedMessage;
 use serde::Serialize;
 use serde_derive::Deserialize;
 
