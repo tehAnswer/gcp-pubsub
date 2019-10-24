@@ -1,7 +1,9 @@
 use serde::Serialize;
 use surf::http::Method;
 
-use crate::presenters::{CreateSubscription, PullSubscription, ReceiveMessages};
+use crate::presenters::{
+  AcknowledgeMessages, CreateSubscription, PullSubscription, ReceiveMessages,
+};
 use crate::{Client, Error, Message, Topic};
 
 #[derive(Debug)]
@@ -31,13 +33,36 @@ impl Subscription {
       let body_json = response.body_string().await;
 
       body_json
-        .map_err(|_| Error::Unexpected("Deserializing".into()))
+        .map_err(|err| Error::Unexpected(format!("{}", err)))
         .and_then(|payload| {
           let result: Result<ReceiveMessages, serde_json::Error> = serde_json::from_str(&payload);
           result
             .and_then(|messages| Ok(messages.received_messages))
             .map_err(Error::Json)
         })
+    } else {
+      response
+        .body_string()
+        .await
+        .map_err(|err| Error::Unexpected(format!("{}", err)))
+        .and_then(|json| Err(Error::PubSub(json)))
+    }
+  }
+
+  pub async fn ack(&self, messages: &Vec<Message>) -> Result<(), Error> {
+    let url = format!(
+      "https://pubsub.googleapis.com/v1/{}:acknowledge",
+      &self.name
+    );
+    let payload = AcknowledgeMessages::new(messages);
+    let mut response = self
+      .client
+      .base_request(Method::POST, &url)
+      .body_json(&payload)?
+      .await
+      .unwrap();
+    if response.status().is_success() {
+      return Ok(());
     } else {
       response
         .body_string()

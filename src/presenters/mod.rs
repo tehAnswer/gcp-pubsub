@@ -15,3 +15,6 @@ pub use pull_subscription::*;
 
 pub mod receive_messages;
 pub use receive_messages::*;
+
+pub mod acknowledge_messages;
+pub use acknowledge_messages::*;
