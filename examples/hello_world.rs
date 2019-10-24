@@ -41,7 +41,9 @@ async fn main() -> Result<(), Exception> {
   let msg = new_topic.publish(X::default()).await;
   println!("{:?}", msg);
   println!("{:?}", new_subs);
-  let result = new_subs.pull().await;
-  println!("{:?}", result);
+  let messages = new_subs.pull().await.unwrap();
+  println!("{:?}", messages);
+  let ack = new_subs.ack(&messages).await;
+  println!("{:?}", ack);
   Ok(())
 }
