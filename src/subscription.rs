@@ -1,4 +1,3 @@
-use serde::Serialize;
 use surf::http::Method;
 
 use crate::presenters::{
@@ -72,9 +71,8 @@ impl Subscription {
     }
   }
 
-  pub async fn create(topic: &Topic) -> Result<Subscription, Error> {
-    let new_subscription_name = format!("s{}", &nanoid::generate(10));
-    let subscription = Self::new(topic.client.clone(), &new_subscription_name);
+  pub async fn create(topic: &Topic, name: &str) -> Result<Subscription, Error> {
+    let subscription = Self::new(topic.client.clone(), name);
     let url = format!("https://pubsub.googleapis.com/v1/{}", subscription.name);
     let payload = CreateSubscription::from(&topic);
     let mut response = subscription
