@@ -22,7 +22,13 @@ impl Client {
       credentials,
     }
   }
-
+  pub fn from_file_path(file_path: &str) -> Self {
+    let credentials = goauth::credentials::Credentials::from_file(file_path).unwrap();
+    Client {
+      access_token: None,
+      credentials,
+    }
+  }
   pub fn base_request(&self, method: Method, url: &str) -> Request<impl HttpClient> {
     let parsed_url = Url::parse(url).unwrap();
     Request::new(method, parsed_url).set_header(
