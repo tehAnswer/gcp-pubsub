@@ -1,4 +1,3 @@
-use crate::error;
 use base64;
 use chrono::{DateTime, Utc};
 use serde::Serialize;
@@ -11,13 +10,6 @@ pub struct EncodedMessage {
   pub message_id: String,
   #[serde(skip_serializing, alias = "publishTime")]
   pub publish_time: DateTime<Utc>,
-}
-
-pub trait FromPubSubMessage
-where
-  Self: std::marker::Sized,
-{
-  fn from(message: EncodedMessage) -> Result<Self, error::Error>;
 }
 
 impl EncodedMessage {

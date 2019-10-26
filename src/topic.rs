@@ -42,7 +42,12 @@ impl Topic {
   }
 
   pub async fn create_subscription(&self) -> Result<Subscription, Error> {
-    Subscription::create(self.clone()).await
+    let new_subscription_name = format!("s{}", &nanoid::generate(10));
+    Subscription::create(self.clone(), &new_subscription_name).await
+  }
+
+  pub async fn create_subscription_with_name(&self, name: &str) -> Result<Subscription, Error> {
+    Subscription::create(self.clone(), name).await
   }
 
   pub async fn publish<T: Serialize>(&self, data: T) -> Result<(), Error> {
