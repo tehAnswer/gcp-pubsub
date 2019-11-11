@@ -2,7 +2,7 @@ use crate::presenters::EncodedMessage;
 use crate::Error;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Message {
   #[serde(alias = "ackId")]
   pub(crate) ack_id: String,
