@@ -18,10 +18,11 @@ impl Message {
   }
 }
 
+#[cfg(test)]
 mod tests {
   use crate::presenters::EncodedMessage;
   use crate::{Error, Message};
-  use serde::{de::DeserializeOwned, Deserialize, Serialize};
+  use serde::{Deserialize, Serialize};
 
   #[test]
 

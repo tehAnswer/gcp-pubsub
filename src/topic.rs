@@ -21,24 +21,13 @@ impl Topic {
   }
 
   pub async fn create(client: Client, name: &str) -> Result<Topic, Error> {
-    let topic = Self::new(client, name);
+    let mut topic = Self::new(client, name);
     let url = format!("https://pubsub.googleapis.com/v1/{}", topic.name);
     let payload = CreateTopic::from(&topic.name);
-    let mut response = topic
-      .client
-      .base_request(Method::PUT, &url)
-      .body_json(&payload)?
-      .await
-      .unwrap();
-    if response.status().is_success() {
-      return Ok(topic);
-    } else {
-      response
-        .body_string()
-        .await
-        .map_err(|err| Error::Unexpected(format!("{}", err)))
-        .and_then(|json| Err(Error::PubSub(json)))
-    }
+    let topic_client = &mut topic.client;
+    let response_result = topic_client.request(&Method::PUT, &url, payload).await;
+    let response = topic_client.parse::<serde_json::Value>(response_result).await;
+    response.map(|_| topic)
   }
 
   pub async fn create_subscription(&self) -> Result<Subscription, Error> {
@@ -50,23 +39,15 @@ impl Topic {
     Subscription::create(self.clone(), name).await
   }
 
-  pub async fn publish<T: Serialize>(&self, data: T) -> Result<(), Error> {
+  pub async fn publish<T: Serialize>(&mut self, data: T) -> Result<(), Error> {
     let url = format!("https://pubsub.googleapis.com/v1/{}:publish", self.name);
     let payload = PublishMessage::from(&data);
-    let mut response = self
+
+    let response_result = self.client.request(&Method::POST, &url, payload).await;
+    self
       .client
-      .base_request(Method::POST, &url)
-      .body_json(&payload)?
+      .parse::<serde_json::Value>(response_result)
       .await
-      .unwrap();
-    if response.status().is_success() {
-      Ok(())
-    } else {
-      response
-        .body_string()
-        .await
-        .map_err(|err| Error::Unexpected(format!("{}", err)))
-        .and_then(|json| Err(Error::PubSub(json)))
-    }
+      .map(|_| ())
   }
 }
