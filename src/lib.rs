@@ -3,6 +3,7 @@ extern crate goauth;
 extern crate nanoid;
 extern crate smpl_jwt;
 extern crate surf;
+extern crate time;
 
 pub mod client;
 pub use client::*;

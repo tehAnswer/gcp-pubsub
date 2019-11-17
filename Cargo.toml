@@ -9,10 +9,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-surf = { git = "https://github.com/rustasync/surf", features = ["native-client"]  }
+# surf = { git = "https://github.com/rustasync/surf", features = ["native-client"]  }
+surf = { version = "1.0.3", features = ["native-client"]  }
 runtime = { version = "0.3.0-alpha.7" }
 futures-preview = { version = "0.3.0-alpha.19" }
-goauth = { version = "0.6.0-beta1" }
+time = "0.1.41"
+goauth = { version = "0.6.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1.0"
 serde_json = "1.0.40"
