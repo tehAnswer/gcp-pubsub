@@ -43,6 +43,8 @@ impl From<serde_json::Error> for Error {
   }
 }
 
+impl std::error::Error for Error {}
+
 // impl From<base64::DecodeError> for Error {
 //   fn from(err: base64::DecodeError) -> Error {
 //     Error::Base64(err)
