@@ -1,4 +1,4 @@
-use surf::http::Method;
+use surf::http_types::Method;
 
 use crate::presenters::{
   AcknowledgeMessages, CreateSubscription, PullSubscription, ReceiveMessages,
@@ -24,7 +24,7 @@ impl Subscription {
     let payload = PullSubscription::new();
     let mut response = self
       .client
-      .base_request(Method::POST, &url)
+      .base_request(Method::Post, &url)
       .body_json(&payload)?
       .await
       .unwrap();
@@ -56,7 +56,7 @@ impl Subscription {
     let payload = AcknowledgeMessages::new(messages);
     let mut response = self
       .client
-      .base_request(Method::POST, &url)
+      .base_request(Method::Post, &url)
       .body_json(&payload)?
       .await
       .unwrap();
@@ -77,7 +77,7 @@ impl Subscription {
     let payload = CreateSubscription::from(&topic);
     let mut response = subscription
       .client
-      .base_request(Method::PUT, &url)
+      .base_request(Method::Put, &url)
       .body_json(&payload)?
       .await
       .unwrap();
