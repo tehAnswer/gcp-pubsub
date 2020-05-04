@@ -4,13 +4,13 @@ use serde_derive::Deserialize;
 
 #[derive(Deserialize, Serialize)]
 pub struct CreateSubscription {
-  pub topic: String,
+    pub topic: String,
 }
 
 impl CreateSubscription {
-  pub fn from(topic: &Topic) -> Self {
-    Self {
-      topic: topic.name.to_owned(),
+    pub fn from(topic: &Topic) -> Self {
+        Self {
+            topic: topic.name.to_owned(),
+        }
     }
-  }
 }
